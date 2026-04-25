@@ -77,3 +77,52 @@ def find_event_by_id(events, event_id):
         if e["id"] == event_id:
             return e
     return None
+
+def extract_pass_features(event, events, pass_id):
+    features = {
+        "pass_player": None,
+        "pass_start_distance": None,
+        "pass_length": None,
+        "pass_end_distance": None,
+        "pass_angle": None,
+        "pass_height": None,
+        "pass_type": None,
+        "cross": None,
+        "cut_back": None,
+        "pass_height_b": None,
+        "pass_type_b": None
+    }
+
+    if pass_id is None:
+        return features
+
+    pass_event = find_event_by_id(events, pass_id)
+
+    if not pass_event or pass_event["type"]["name"] != "Pass":
+        return features
+
+    passer_x, passer_y = pass_event["location"]
+    p = pass_event.get("pass", {})
+
+    length = p.get("length")
+    angle = p.get("angle")
+    pass_type = p.get("type", {}).get("name")
+
+    features.update({
+        "pass_player": pass_event["player"]["name"],
+        "pass_start_distance": shot_distance(passer_x, passer_y) / 127,
+        "pass_length": length / 144 if length is not None else None,
+        "pass_angle": (angle + math.pi) / (2 * math.pi) if angle is not None else None,
+        "pass_height": p.get("height", {}).get("name"),
+        "pass_type": pass_type if pass_type is not None else "Open Play",
+        "cross": int(p.get("cross", False)),
+        "cut_back": int(p.get("cut_back", False)),
+        "pass_height_b": 0 if p.get("height", {}).get("name") == "Ground Pass" else 1,
+        "pass_type_b": 0 if pass_type is None else 1
+    })
+
+    if "end_location" in p:
+        pass_x, pass_y = p["end_location"]
+        features["pass_end_distance"] = shot_distance(pass_x, pass_y) / 127
+
+    return features
