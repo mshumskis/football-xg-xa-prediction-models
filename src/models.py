@@ -1,5 +1,5 @@
 from sklearn.model_selection import StratifiedKFold, GridSearchCV
-from sklearn.metrics import brier_score_loss, make_scorer
+from sklearn.metrics import brier_score_loss, make_scorer, log_loss, roc_auc_score, accuracy_score
 
 def evaluate_model(model, param_grid, X, y):
 
@@ -41,3 +41,27 @@ def print_results(results):
     print(f"Best Accuracy: {results['accuracy']}")
     print(f"Best Log Loss: {results['log_loss']}")
     print(f"Best Brier Score: {results['brier_score']}")
+
+def print_test_metrics(y_true, pred_xg, statsbomb_xg):
+
+    roc_auc_pred = roc_auc_score(y_true, pred_xg)
+    accuracy_pred = accuracy_score(y_true, (pred_xg > 0.5).astype(int))
+    logloss_pred = log_loss(y_true, pred_xg)
+    brier_pred = brier_score_loss(y_true, pred_xg)
+
+    roc_auc_sb = roc_auc_score(y_true, statsbomb_xg)
+    accuracy_sb = accuracy_score(y_true, (statsbomb_xg > 0.5).astype(int))
+    logloss_sb = log_loss(y_true, statsbomb_xg)
+    brier_sb = brier_score_loss(y_true, statsbomb_xg)
+
+    print("\n=== Model ===")
+    print(f"ROC AUC:     {roc_auc_pred:.3f}")
+    print(f"Accuracy:    {accuracy_pred:.3f}")
+    print(f"Log Loss:    {logloss_pred:.3f}")
+    print(f"Brier Score: {brier_pred:.3f}")
+
+    print("\n=== StatsBomb xG ===")
+    print(f"ROC AUC:     {roc_auc_sb:.3f}")
+    print(f"Accuracy:    {accuracy_sb:.3f}")
+    print(f"Log Loss:    {logloss_sb:.3f}")
+    print(f"Brier Score: {brier_sb:.3f}")
