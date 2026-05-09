@@ -32,7 +32,7 @@ def evaluate_model(model, param_grid, X, y):
         "brier_score": grid.cv_results_["mean_test_brier"][best_index]
     }
 
-    return results
+    return grid, results
 
 def print_results(results):
 
