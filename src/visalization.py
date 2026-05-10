@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
+from sklearn.calibration import calibration_curve
 
 def plot_correlation(statsbomb_xg, pred_xg):
-
     plt.figure(figsize=(6,6))
     plt.scatter(statsbomb_xg, pred_xg, alpha=0.6, edgecolor='k')
     plt.plot([0, 1], [0, 1], 'r--', label='Perfect Agreement')
@@ -10,4 +10,20 @@ def plot_correlation(statsbomb_xg, pred_xg):
     plt.title("Correlation plot: Model vs StatsBomb xG")
     plt.legend()
     plt.grid(True)
+    plt.show()
+
+def plot_calibration(y_test, pred_xg, statsbomb_xg):
+    prob_true_model, prob_pred_model = calibration_curve(y_test, pred_xg, n_bins=10)
+    prob_true_sb, prob_pred_sb = calibration_curve(y_test, statsbomb_xg, n_bins=10)
+
+    plt.figure(figsize=(7, 7))
+    plt.plot(prob_pred_model, prob_true_model, marker='o', label='Model', color='blue')
+    plt.plot(prob_pred_sb, prob_true_sb, marker='s', label='StatsBomb xG', color='orange')
+    plt.plot([0, 1], [0, 1], linestyle='--', color='gray', label='Perfect Calibration')
+    plt.xlabel('Predicted probability')
+    plt.ylabel('Observed goal frequency')
+    plt.title('Calibration Plot')
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
     plt.show()
