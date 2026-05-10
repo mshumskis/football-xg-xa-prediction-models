@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 from sklearn.calibration import calibration_curve
+from sklearn.metrics import roc_curve, auc
 
 def plot_correlation(statsbomb_xg, pred_xg):
     plt.figure(figsize=(6,6))
@@ -39,4 +40,23 @@ def plot_weekly_xg(week_xg):
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
+    plt.show()
+
+def plot_roc_curve(y_test, pred_xg, statsbomb_xg):
+    fpr_model, tpr_model, _ = roc_curve(y_test, pred_xg)
+    roc_auc_model = auc(fpr_model, tpr_model)
+    fpr_sb, tpr_sb, _ = roc_curve(y_test, statsbomb_xg)
+    roc_auc_sb = auc(fpr_sb, tpr_sb)
+
+    plt.figure(figsize=(8, 6))
+    plt.plot(fpr_model, tpr_model, color="blue", lw=2, label=f"Model (AUC = {roc_auc_model:.3f})")
+    plt.plot(fpr_sb, tpr_sb, color="orange", lw=2, label=f"StatsBomb xG (AUC = {roc_auc_sb:.3f})")
+    plt.plot([0, 1], [0, 1], color="gray", lw=1.5, linestyle="--", label="Random guess")
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel("False Positive Rate")
+    plt.ylabel("True Positive Rate")
+    plt.title("ROC Curve Comparison: Model vs StatsBomb xG")
+    plt.legend(loc="lower right")
+    plt.grid(True)
     plt.show()
