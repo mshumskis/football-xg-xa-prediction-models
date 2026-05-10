@@ -27,3 +27,16 @@ def plot_calibration(y_test, pred_xg, statsbomb_xg):
     plt.grid(True)
     plt.tight_layout()
     plt.show()
+
+def plot_weekly_xg(week_xg):
+    plt.figure(figsize=(10, 6))
+    plt.plot(week_xg['week'], week_xg['predicted_xg'], marker='o', label='Model xG', color='blue')
+    plt.plot(week_xg['week'], week_xg['statsbomb_xg'], marker='s', label='StatsBomb xG', color='orange')
+    plt.plot(week_xg['week'], week_xg['goal/no goal'], marker='*', label='Actual goals', color='green')
+    plt.xlabel('Match Week')
+    plt.ylabel('Total xG (per match)')
+    plt.title('Barcelona xG per Match Week (2019/2020)')
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
