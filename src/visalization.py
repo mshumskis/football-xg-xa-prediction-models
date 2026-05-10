@@ -60,3 +60,32 @@ def plot_roc_curve(y_test, pred_xg, statsbomb_xg):
     plt.legend(loc="lower right")
     plt.grid(True)
     plt.show()
+
+def plot_feature_importances(importances_df, model_name):
+    plt.figure(figsize=(8, 5))
+    plt.barh(
+        importances_df["Feature"],
+        importances_df["Mean"],
+        xerr=importances_df["Std"],
+        color="skyblue",
+        edgecolor="black"
+    )
+    plt.xlabel("Mean Decrease in ROC AUC")
+    plt.title(
+        f"Permutation Feature Importance - {model_name}"
+    )
+    plt.grid(axis="x", linestyle="--", alpha=0.7)
+    plt.tight_layout()
+
+    for i, row in importances_df.iterrows():
+        mean = row["Mean"]
+        std = row["Std"]
+        plt.text(
+            mean + std + 0.001,
+            list(importances_df.index).index(i),
+            f"{mean:.3f} ± {std:.3f}",
+            va='center',
+            fontsize=9
+        )
+
+    plt.show()

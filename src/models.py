@@ -1,5 +1,7 @@
 from sklearn.model_selection import StratifiedKFold, GridSearchCV
 from sklearn.metrics import brier_score_loss, make_scorer, log_loss, roc_auc_score, accuracy_score
+from sklearn.inspection import permutation_importance
+import pandas as pd
 
 def evaluate_model(model, param_grid, X, y):
 
@@ -65,3 +67,18 @@ def print_test_metrics(y_true, pred_xg, statsbomb_xg):
     print(f"Accuracy:    {accuracy_sb:.3f}")
     print(f"Log Loss:    {logloss_sb:.3f}")
     print(f"Brier Score: {brier_sb:.3f}")
+
+def get_permutation_importance(model, X_test, y_test):
+
+    result = permutation_importance(
+        model, X_test, y_test, n_repeats=10,
+        scoring="roc_auc", random_state=42, n_jobs=-1
+    )
+
+    importances_df = pd.DataFrame({
+        "Feature": X_test.columns,
+        "Mean": result.importances_mean,
+        "Std": result.importances_std
+    }).sort_values(by="Mean", ascending=True)
+
+    return importances_df
