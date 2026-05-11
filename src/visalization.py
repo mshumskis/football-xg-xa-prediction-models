@@ -89,3 +89,18 @@ def plot_feature_importances(importances_df, model_name):
         )
 
     plt.show()
+
+def plot_l1_paths(C_values, coefs, feature_names):
+    plt.figure(figsize=(10, 6))
+
+    for i, feature in enumerate(feature_names):
+        plt.plot(C_values, coefs[:, i], label=feature)
+
+    plt.xscale("log")
+    plt.xlabel("C (inverse regularization strength)")
+    plt.ylabel("Coefficient value")
+    plt.title("L1 Logistic Regression — Coefficient Path")
+    plt.axhline(0, color="black", linewidth=0.8, linestyle="--")
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.tight_layout()
+    plt.show()
