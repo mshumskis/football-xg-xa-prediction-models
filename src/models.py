@@ -1,7 +1,10 @@
+import pandas as pd
+import numpy as np
 from sklearn.model_selection import StratifiedKFold, GridSearchCV
 from sklearn.metrics import brier_score_loss, make_scorer, log_loss, roc_auc_score, accuracy_score
 from sklearn.inspection import permutation_importance
-import pandas as pd
+from sklearn.base import clone
+from scipy.stats import norm
 
 def evaluate_model(model, param_grid, X, y):
 
@@ -87,3 +90,47 @@ def print_coefficients(feature_names, coefficients):
     print("Coefficients:")
     for feature, weight in zip(feature_names, coefficients):
         print(feature, weight)
+
+def bootstrap_logistic_inference(model, X_train, y_train, feature_names):
+    n_boot = 2000
+    n = len(y_train)
+    boot_coefs = np.zeros((n_boot, len(feature_names) + 1))
+
+    for i in range(n_boot):
+        idx = np.random.randint(0, n, n)
+        X_b = X_train[idx]
+        if isinstance(y_train, pd.Series):
+            y_b = y_train.iloc[idx].values
+        else:
+            y_b = y_train[idx]
+
+        boot_model = clone(model)
+        boot_model.random_state = i
+        boot_model.fit(X_b, y_b)
+        boot_coefs[i, 0] = boot_model.intercept_[0]
+        boot_coefs[i, 1:] = boot_model.coef_[0]
+
+    coef_original = np.concatenate([[model.intercept_[0]], model.coef_[0]])
+
+    boot_se = boot_coefs.std(axis=0, ddof=1)
+    z_values = coef_original / boot_se
+    p_values = 2 * (1 - norm.cdf(np.abs(z_values)))
+    ci_low = np.percentile(boot_coefs, 2.5, axis=0)
+    ci_high = np.percentile(boot_coefs, 97.5, axis=0)
+
+    results = pd.DataFrame({
+        "Feature": ["intercept"] + list(feature_names),
+        "Coefficient": np.round(coef_original, 6),
+        "Std. Error": np.round(boot_se, 6),
+        "z": np.round(z_values, 3),
+        "P>|z|": np.round(p_values, 4),
+        "[0.025": np.round(ci_low, 4),
+        "0.975]": np.round(ci_high, 4)
+    })
+
+    results[" "] = results["P>|z|"].apply(
+        lambda p: "**" if p < 0.01
+        else ("*" if p < 0.05 else "")
+    )
+
+    return results
