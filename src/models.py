@@ -68,7 +68,7 @@ def print_test_metrics(y_true, pred_xg, statsbomb_xg):
     print(f"Log Loss:    {logloss_sb:.3f}")
     print(f"Brier Score: {brier_sb:.3f}")
 
-def get_permutation_importance(model, X_test, y_test):
+def get_permutation_importance(model, feature_names, X_test, y_test):
 
     result = permutation_importance(
         model, X_test, y_test, n_repeats=10,
@@ -76,7 +76,7 @@ def get_permutation_importance(model, X_test, y_test):
     )
 
     importances_df = pd.DataFrame({
-        "Feature": X_test.columns,
+        "Feature": feature_names,
         "Mean": result.importances_mean,
         "Std": result.importances_std
     }).sort_values(by="Mean", ascending=True)
