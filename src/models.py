@@ -82,3 +82,8 @@ def get_permutation_importance(model, X_test, y_test):
     }).sort_values(by="Mean", ascending=True)
 
     return importances_df
+
+def print_coefficients(feature_names, coefficients):
+    print("Coefficients:")
+    for feature, weight in zip(feature_names, coefficients):
+        print(feature, weight)
