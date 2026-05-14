@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from sklearn.calibration import calibration_curve
 from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import precision_recall_curve, average_precision_score
 
 def plot_correlation(statsbomb_xg, pred_xg):
     plt.figure(figsize=(6,6))
@@ -103,4 +104,39 @@ def plot_l1_paths(C_values, coefs, feature_names):
     plt.axhline(0, color="black", linewidth=0.8, linestyle="--")
     plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.tight_layout()
+    plt.show()
+
+def plot_model_roc_curves(y_true, model_predictions):
+
+    plt.figure(figsize=(8, 6))
+
+    for model_name, y_pred in model_predictions.items():
+        fpr, tpr, _ = roc_curve(y_true, y_pred)
+        roc_auc = auc(fpr, tpr)
+        plt.plot(fpr, tpr, lw=2, label=f"{model_name} (AUC = {roc_auc:.3f})")
+
+    plt.plot([0, 1], [0, 1], linestyle="--", lw=1.5, label="Random guess")
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel("False Positive Rate")
+    plt.ylabel("True Positive Rate")
+    plt.title("ROC Curve Comparison")
+    plt.legend(loc="lower right")
+    plt.grid(True)
+    plt.show()
+
+def plot_precision_recall_curves(y_true, model_predictions):
+
+    plt.figure(figsize=(8, 6))
+
+    for model_name, y_pred in model_predictions.items():
+        precision, recall, _ = precision_recall_curve(y_true, y_pred)
+        ap_score = average_precision_score(y_true, y_pred)
+        plt.plot(recall, precision, lw=2, label=f"{model_name} (AP = {ap_score:.3f})")
+
+    plt.xlabel("Recall")
+    plt.ylabel("Precision")
+    plt.title("Precision–Recall Curve Comparison")
+    plt.legend(loc="upper right")
+    plt.grid(True)
     plt.show()
