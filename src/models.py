@@ -47,6 +47,16 @@ def print_results(results):
     print(f"Best Log Loss: {results['log_loss']}")
     print(f"Best Brier Score: {results['brier_score']}")
 
+def summarize_predictions(y_true, predictions, statsbomb_xg):
+
+    total_pred_xg = predictions.sum()
+    total_statsbomb_xg = statsbomb_xg.sum()
+    total_goals = y_true.sum()
+
+    print(f"Total Predicted xG: {total_pred_xg:.2f}")
+    print(f"Total StatsBomb xG: {total_statsbomb_xg:.2f}")
+    print(f"Actual Goals: {total_goals}")
+
 def print_test_metrics(y_true, pred_xg, statsbomb_xg):
 
     roc_auc_pred = roc_auc_score(y_true, pred_xg)
@@ -70,6 +80,22 @@ def print_test_metrics(y_true, pred_xg, statsbomb_xg):
     print(f"Accuracy:    {accuracy_sb:.3f}")
     print(f"Log Loss:    {logloss_sb:.3f}")
     print(f"Brier Score: {brier_sb:.3f}")
+
+def print_correlation_stats(predictions, statsbomb_xg):
+
+    correlation = np.corrcoef(statsbomb_xg, predictions)[0, 1]
+    mae = np.mean(np.abs(statsbomb_xg - predictions))
+
+    print(f"\nCorrelation (Model xG vs StatsBomb xG): {correlation:.3f}")
+    print(f"Mean Absolute Error: {mae:.3f}")
+
+def aggregate_weekly_xg(df, prediction_column):
+
+    return df.groupby("week").agg({
+        prediction_column: "sum",
+        "statsbomb_xg": "sum",
+        "goal/no goal": "sum"
+    }).reset_index()
 
 def get_permutation_importance(model, feature_names, X_test, y_test):
 
