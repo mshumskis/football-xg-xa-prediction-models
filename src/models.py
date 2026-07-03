@@ -47,27 +47,25 @@ def print_results(results):
     print(f"Best Log Loss: {results['log_loss']}")
     print(f"Best Brier Score: {results['brier_score']}")
 
-def summarize_predictions(y_true, predictions, statsbomb_xg):
+def summarize_predictions(y_true, predictions, statsbomb_xg=None):
 
     total_pred_xg = predictions.sum()
-    total_statsbomb_xg = statsbomb_xg.sum()
     total_goals = y_true.sum()
 
     print(f"Total Predicted xG: {total_pred_xg:.2f}")
-    print(f"Total StatsBomb xG: {total_statsbomb_xg:.2f}")
+
+    if statsbomb_xg is not None:
+        total_statsbomb_xg = statsbomb_xg.sum()
+        print(f"Total StatsBomb xG: {total_statsbomb_xg:.2f}")
+
     print(f"Actual Goals: {total_goals}")
 
-def print_test_metrics(y_true, pred_xg, statsbomb_xg):
+def print_test_metrics(y_true, pred_xg, statsbomb_xg=None):
 
     roc_auc_pred = roc_auc_score(y_true, pred_xg)
     accuracy_pred = accuracy_score(y_true, (pred_xg > 0.5).astype(int))
     logloss_pred = log_loss(y_true, pred_xg)
     brier_pred = brier_score_loss(y_true, pred_xg)
-
-    roc_auc_sb = roc_auc_score(y_true, statsbomb_xg)
-    accuracy_sb = accuracy_score(y_true, (statsbomb_xg > 0.5).astype(int))
-    logloss_sb = log_loss(y_true, statsbomb_xg)
-    brier_sb = brier_score_loss(y_true, statsbomb_xg)
 
     print("\n=== Model ===")
     print(f"ROC AUC:     {roc_auc_pred:.3f}")
@@ -75,11 +73,17 @@ def print_test_metrics(y_true, pred_xg, statsbomb_xg):
     print(f"Log Loss:    {logloss_pred:.3f}")
     print(f"Brier Score: {brier_pred:.3f}")
 
-    print("\n=== StatsBomb xG ===")
-    print(f"ROC AUC:     {roc_auc_sb:.3f}")
-    print(f"Accuracy:    {accuracy_sb:.3f}")
-    print(f"Log Loss:    {logloss_sb:.3f}")
-    print(f"Brier Score: {brier_sb:.3f}")
+    if statsbomb_xg is not None:
+        roc_auc_sb = roc_auc_score(y_true, statsbomb_xg)
+        accuracy_sb = accuracy_score(y_true, (statsbomb_xg > 0.5).astype(int))
+        logloss_sb = log_loss(y_true, statsbomb_xg)
+        brier_sb = brier_score_loss(y_true, statsbomb_xg)
+
+        print("\n=== StatsBomb xG ===")
+        print(f"ROC AUC:     {roc_auc_sb:.3f}")
+        print(f"Accuracy:    {accuracy_sb:.3f}")
+        print(f"Log Loss:    {logloss_sb:.3f}")
+        print(f"Brier Score: {brier_sb:.3f}")
 
 def print_correlation_stats(predictions, statsbomb_xg):
 
