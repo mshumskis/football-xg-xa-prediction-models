@@ -88,9 +88,9 @@ Each experiment evaluates the following models:
 - Support Vector Machine (SVM)
 - XGBoost
 
-Hyperparameters are optimized using GridSearchCV with 10-fold stratified cross-validation.
+Hyperparameters are optimized using GridSearchCV with 10-fold stratified cross-validation, using ROC AUC as the model selection criterion.
 
-## Example Outputs
+## Example Results
 
 The notebooks generate several outputs that facilitate model evaluation and interpretation, including:
 
@@ -101,11 +101,32 @@ The notebooks generate several outputs that facilitate model evaluation and inte
 - Permutation feature importance
 - Logistic Regression coefficient analysis
 
+### Testing performance example table
+
+The table below shows the testing performance of the **XGBoost Expected Goals (xG)** model.
+
+| Metric | XGBoost | StatsBomb xG |
+|:------|---------:|-------------:|
+| ROC AUC | 0.723 | 0.781 |
+| Accuracy | 0.840 | 0.856 |
+| Log Loss | 0.403 | 0.370 |
+| Brier Score | 0.123 | 0.112 |
+
+Additional testing statistics:
+
+| Statistic | Value |
+|:----------|------:|
+| Total Predicted xG | 63.22 |
+| Total StatsBomb xG | 55.32 |
+| Actual Goals | 70 |
+| Correlation with StatsBomb xG | 0.690 |
+| Mean Absolute Error | 0.071 |
+
 ### ROC Curve
 
 <img src="images/roc_curve.png" alt="ROC Curve" width="500">
 
-### Weekly xG Predictions
+### Weekly xG Aggregation
 
 <img src="images/weekly_aggregate.png" alt="Weekly xG" width="500">
 
@@ -115,7 +136,7 @@ The notebooks generate several outputs that facilitate model evaluation and inte
 
 ### Calibration Plot
 
-<img src="images/calibration_plot.png" alt="Calibraion Plot" width="500">
+<img src="images/calibration_plot.png" alt="Calibration Plot" width="500">
 
 ## Future Work
 
